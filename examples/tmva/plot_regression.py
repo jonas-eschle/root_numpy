@@ -3,6 +3,7 @@
 Regression with NumPy and TMVA
 ==============================
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 from root_numpy.tmva import add_regression_events, evaluate_reader
@@ -25,10 +26,7 @@ factory = TMVA.Factory('regressor', output,
                        'AnalysisType=Regression:'
                        '!V:Silent:!DrawProgressBar')
 
-if ROOT_VERSION >= '6.07/04':
-    data = TMVA.DataLoader('.')
-else:
-    data = factory
+data = TMVA.DataLoader('.') if ROOT_VERSION >= '6.07/04' else factory
 data.AddVariable('x', 'F')
 data.AddTarget('y', 'F')
 

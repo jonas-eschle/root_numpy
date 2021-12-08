@@ -3,6 +3,7 @@
 Multiclass Classification with NumPy and TMVA
 =============================================
 """
+
 from array import array
 import numpy as np
 from numpy.random import RandomState
@@ -40,10 +41,7 @@ factory = TMVA.Factory('classifier', output,
                        'AnalysisType=Multiclass:'
                        '!V:Silent:!DrawProgressBar')
 
-if ROOT_VERSION >= '6.07/04':
-    data = TMVA.DataLoader('.')
-else:
-    data = factory
+data = TMVA.DataLoader('.') if ROOT_VERSION >= '6.07/04' else factory
 for n in range(2):
     data.AddVariable('f{0}'.format(n), 'F')
 

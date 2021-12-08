@@ -61,10 +61,9 @@ def add_classification_events(obj, events, labels, signal_label=None,
             raise TypeError(
                 "obj must be a TMVA.DataLoader "
                 "instance for ROOT >= 6.07/04")
-    else:  # pragma: no cover
-        if not isinstance(obj, TMVA.Factory):
-            raise TypeError(
-                "obj must be a TMVA.Factory instance")
+    elif not isinstance(obj, TMVA.Factory):
+        raise TypeError(
+            "obj must be a TMVA.Factory instance")
     events = np.ascontiguousarray(events, dtype=np.float64)
     if events.ndim == 1:
         # convert to 2D
@@ -134,10 +133,9 @@ def add_regression_events(obj, events, targets, weights=None, test=False):
             raise TypeError(
                 "obj must be a TMVA.DataLoader "
                 "instance for ROOT >= 6.07/04")
-    else:  # pragma: no cover
-        if not isinstance(obj, TMVA.Factory):
-            raise TypeError(
-                "obj must be a TMVA.Factory instance")
+    elif not isinstance(obj, TMVA.Factory):
+        raise TypeError(
+            "obj must be a TMVA.Factory instance")
     events = np.ascontiguousarray(events, dtype=np.float64)
     if events.ndim == 1:
         # convert to 2D

@@ -84,7 +84,7 @@ class TMVA_Estimator(object):
         else:  # pragma: no cover
             obj = self.factory
 
-        extra_kwargs = dict()
+        extra_kwargs = {}
         if self.task == 'Regression':
             func = rnp.tmva.add_regression_events
         else:

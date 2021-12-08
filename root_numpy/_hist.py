@@ -183,8 +183,11 @@ def hist2array(hist, include_overflow=False, copy=True, return_edges=False, retu
     elif isinstance(hist, ROOT.TH1):
         shape = (hist.GetNbinsX() + 2,)
     elif isinstance(hist, ROOT.THnBase):
-        shape = tuple([hist.GetAxis(i).GetNbins() + 2
-                       for i in range(hist.GetNdimensions())])
+        shape = tuple(
+            hist.GetAxis(i).GetNbins() + 2
+            for i in range(hist.GetNdimensions())
+        )
+
         simple_hist = False
     else:
         raise TypeError(
@@ -201,10 +204,7 @@ def hist2array(hist, include_overflow=False, copy=True, return_edges=False, retu
                 "hist is somehow an instance of TH[1|2|3] "
                 "but not TArray[D|F|I|S|C]")
     else:  # THn, THnSparse
-        if isinstance(hist, ROOT.THnSparse):
-            cls_string = 'THnSparse{0}'
-        else:
-            cls_string = 'THn{0}'
+        cls_string = 'THnSparse{0}' if isinstance(hist, ROOT.THnSparse) else 'THn{0}'
         for hist_type in 'CSILFD':
             if isinstance(hist, getattr(ROOT, cls_string.format(hist_type))):
                 break
@@ -233,20 +233,18 @@ def hist2array(hist, include_overflow=False, copy=True, return_edges=False, retu
                                             shape, dtype)
 
     if return_errors:
-        # Construct a NumPy array of the sum of weights squared
-        if simple_hist:
-            if hist_type == 'C':
-                raise TypeError("THxC cannot return Errors")
-            else:
-                # the sum of weights squared is stored in a ROOT
-                # TArrayD pointer. So we must use key 'D' from the
-                # DTYPE_ROOT2NUMPY dictionary.
-                errors = np.sqrt(np.ndarray(shape=shape, dtype=DTYPE_ROOT2NUMPY['D'],
-                                            buffer=hist.GetSumw2().GetArray()))
-        else:
+        if not simple_hist:
             raise TypeError("return_errors does not support THn and THnSparse")
 
 
+        if hist_type == 'C':
+            raise TypeError("THxC cannot return Errors")
+        else:
+            # the sum of weights squared is stored in a ROOT
+            # TArrayD pointer. So we must use key 'D' from the
+            # DTYPE_ROOT2NUMPY dictionary.
+            errors = np.sqrt(np.ndarray(shape=shape, dtype=DTYPE_ROOT2NUMPY['D'],
+                                        buffer=hist.GetSumw2().GetArray()))
     if return_edges:
         if simple_hist:
             ndims = hist.GetDimension()
@@ -268,9 +266,9 @@ def hist2array(hist, include_overflow=False, copy=True, return_edges=False, retu
 
     if not include_overflow:
         # Remove overflow and underflow bins
-        array = array[tuple([slice(1, -1) for idim in range(array.ndim)])]
+        array = array[tuple(slice(1, -1) for idim in range(array.ndim))]
         if return_errors:
-            errors = errors[tuple([slice(1, -1) for idim in range(errors.ndim)])]
+            errors = errors[tuple(slice(1, -1) for idim in range(errors.ndim))]
 
     if simple_hist:
         # Preserve x, y, z -> axis 0, 1, 2 order

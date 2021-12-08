@@ -174,7 +174,7 @@ def setup_package():
             zip_safe=False,
         )
     else:
-        setuptools_options = dict()
+        setuptools_options = {}
 
     setup(
         name='root_numpy',
