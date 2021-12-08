@@ -34,7 +34,7 @@ def make_tree(entries, branches=1, dtype=np.double):
 
 # warm up
 print("warming up... ", end="")
-for i in range(30):
+for _ in range(30):
     tree = make_tree(100, branches=1)
     branchname = tree.GetListOfBranches()[0].GetName()
     tree2array(tree)

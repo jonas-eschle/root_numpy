@@ -11,6 +11,7 @@ with the help of NumPy and root_numpy. This example depends on
     pip install --user rootpy
 
 """
+
 from rootpy.extern.six.moves import range
 from rootpy.tree import Tree, TreeModel, FloatCol
 from rootpy.plotting import Canvas, Hist2D, set_style
@@ -27,8 +28,6 @@ set_style('ATLAS')
 np.random.seed(0)
 random.seed(0)
 
-# create an example TTree dataset
-
 class Sample(TreeModel):
     x = FloatCol()
     y = FloatCol()
@@ -37,7 +36,7 @@ class Sample(TreeModel):
 with root_open('sample.root', 'recreate'):
     # generate toy data in a TTree
     tree = Tree('sample', model=Sample)
-    for i in range(500):
+    for _ in range(500):
         tree.x = gauss(0, 1)
         tree.y = gauss(0, 1)
         tree.Fill()

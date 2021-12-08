@@ -247,7 +247,7 @@ def test_fill_hist():
         assert_raises(ValueError, rnp.fill_hist, h, RNG.randn(10, 4))
 
     # wrong type
-    h = list()
+    h = []
     a = RNG.randn(10)
     assert_raises(TypeError, rnp.fill_hist, h, a)
 
@@ -316,6 +316,6 @@ def test_fill_graph():
         assert_raises(ValueError, rnp.fill_graph, g, RNG.randn(10, 4))
 
     # wrong type
-    h = list()
+    h = []
     a = RNG.randn(10)
     assert_raises(TypeError, rnp.fill_graph, h, a)

@@ -74,16 +74,13 @@ TODO
   to make them appear side-by-side, or in floats.
 
 """
+
 from __future__ import division, absolute_import, print_function
 
 import sys, os, glob, shutil, imp, warnings, re, textwrap, traceback
 import sphinx
 
-if sys.version_info[0] >= 3:
-    from io import StringIO
-else:
-    from io import StringIO
-
+from io import StringIO
 import warnings
 warnings.warn("A plot_directive module is also available under "
               "matplotlib.sphinxext; expect this numpydoc.plot_directive "
@@ -264,11 +261,7 @@ def run(arguments, content, options, state_machine, state, lineno):
     # is it in doctest format?
     is_doctest = contains_doctest(code)
     if 'format' in options:
-        if options['format'] == 'python':
-            is_doctest = False
-        else:
-            is_doctest = True
-
+        is_doctest = options['format'] != 'python'
     # determine output directory name fragment
     source_rel_name = relpath(source_file_name, setup.confdir)
     source_rel_dir = os.path.dirname(source_rel_name)
@@ -307,6 +300,9 @@ def run(arguments, content, options, state_machine, state, lineno):
 
     # generate output restructuredtext
     total_lines = []
+    only_html = ".. only:: html"
+    only_latex = ".. only:: latex"
+
     for j, (code_piece, images) in enumerate(results):
         if options['include-source']:
             if is_doctest:
@@ -323,14 +319,7 @@ def run(arguments, content, options, state_machine, state, lineno):
         opts = [':%s: %s' % (key, val) for key, val in list(options.items())
                 if key in ('alt', 'height', 'width', 'scale', 'align', 'class')]
 
-        only_html = ".. only:: html"
-        only_latex = ".. only:: latex"
-
-        if j == 0:
-            src_link = source_link
-        else:
-            src_link = None
-
+        src_link = source_link if j == 0 else None
         result = format_template(
             TEMPLATE,
             dest_dir=dest_dir_link,
@@ -363,10 +352,8 @@ def run(arguments, content, options, state_machine, state, lineno):
     # copy script (if necessary)
     if source_file_name == rst_file:
         target_name = os.path.join(dest_dir, output_base + source_ext)
-        f = open(target_name, 'w')
-        f.write(unescape_doctest(code))
-        f.close()
-
+        with open(target_name, 'w') as f:
+            f.write(unescape_doctest(code))
     return errors
 
 
@@ -455,17 +442,16 @@ def run_code(code, code_path, ns=None):
     # Reset sys.argv
     old_sys_argv = sys.argv
     sys.argv = [code_path]
-    
+
     try:
-        try:
-            code = unescape_doctest(code)
-            if ns is None:
-                ns = {}
-            if not ns:
-                exec(setup.config.plot_pre_code, ns)
-            exec(code, ns)
-        except (Exception, SystemExit) as err:
-            raise PlotError(traceback.format_exc())
+        code = unescape_doctest(code)
+        if ns is None:
+            ns = {}
+        if not ns:
+            exec(setup.config.plot_pre_code, ns)
+        exec(code, ns)
+    except (Exception, SystemExit) as err:
+        raise PlotError(traceback.format_exc())
     finally:
         os.chdir(pwd)
         sys.argv = old_sys_argv

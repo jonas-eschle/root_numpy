@@ -69,9 +69,7 @@ def try_rebase(remote, branch):
     if p.wait() != 0:
         return True
     cmd = ['git', 'update-ref', 'refs/heads/%s' % branch, rev.strip()]
-    if sp.call(cmd) != 0:
-        return False
-    return True
+    return sp.call(cmd) == 0
 
 
 def get_config(key):

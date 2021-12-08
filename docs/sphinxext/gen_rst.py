@@ -250,12 +250,10 @@ def generate_file_rst(fname, target_dir, src_dir, plot_gallery):
     base_image_name = os.path.splitext(fname)[0]
     image_fname = '%s_%%s.png' % base_image_name
     root_image_fname = 'root_%s_%%s.png' % base_image_name
-    root_fig_num = 1
-
     this_template = rst_template
     last_dir = os.path.split(src_dir)[-1]
     # to avoid leading . in file names, and wrong names in links
-    if last_dir == '.' or last_dir == 'examples':
+    if last_dir in ['.', 'examples']:
         last_dir = ''
     else:
         last_dir += '_'
@@ -288,10 +286,7 @@ def generate_file_rst(fname, target_dir, src_dir, plot_gallery):
         # existing image.
         first_image_file = image_path % 1
         first_root_image_file = root_image_path % 1
-        if os.path.exists(stdout_path):
-            stdout = open(stdout_path).read()
-        else:
-            stdout = ''
+        stdout = open(stdout_path).read() if os.path.exists(stdout_path) else ''
         if os.path.exists(time_path):
             time_elapsed = float(open(time_path).read())
 
@@ -305,6 +300,8 @@ def generate_file_rst(fname, target_dir, src_dir, plot_gallery):
             import matplotlib.pyplot as plt
             plt.close('all')
             cwd = os.getcwd()
+            root_fig_num = 1
+
             try:
                 # First CD in the original example dir, so that any file
                 # created by the example get created in this directory
